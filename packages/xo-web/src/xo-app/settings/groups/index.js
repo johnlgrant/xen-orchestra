@@ -1,15 +1,12 @@
 import _, { messages } from 'intl'
 import ActionButton from 'action-button'
 import Component from 'base-component'
-import includes from 'lodash/includes'
-import isEmpty from 'lodash/isEmpty'
-import keyBy from 'lodash/keyBy'
-import map from 'lodash/map'
 import PropTypes from 'prop-types'
 import React from 'react'
-import size from 'lodash/size'
 import SortedTable from 'sorted-table'
 import { addSubscriptions } from 'utils'
+import { createSelector } from 'selectors'
+import { includes, isEmpty, keyBy, map, size, some } from 'lodash'
 import { injectIntl } from 'react-intl'
 import { SelectSubject } from 'select-objects'
 import { Text } from 'editable'
@@ -22,7 +19,9 @@ import {
   removeUserFromGroup,
   setGroupName,
   subscribeGroups,
+  subscribePlugins,
   subscribeUsers,
+  synchronizeLdapGroups,
 } from 'xo'
 
 @addSubscriptions({
@@ -40,7 +39,7 @@ class UserDisplay extends Component {
   }
 
   render() {
-    const { id, users } = this.props
+    const { id, users, canRemove } = this.props
 
     return (
       <span>
@@ -51,13 +50,15 @@ class UserDisplay extends Component {
             &gt;
           </em>
         )}{' '}
-        <ActionButton
-          className='pull-right'
-          btnStyle='primary'
-          size='small'
-          icon='remove'
-          handler={this._removeUser}
-        />
+        {canRemove && (
+          <ActionButton
+            className='pull-right'
+            btnStyle='primary'
+            size='small'
+            icon='remove'
+            handler={this._removeUser}
+          />
+        )}
       </span>
     )
   }
@@ -88,7 +89,11 @@ class GroupMembersDisplay extends Component {
                 <ul className='list-group'>
                   {map(group.users, user => (
                     <li className='list-group-item' key={user}>
-                      <UserDisplay id={user} group={group} />
+                      <UserDisplay
+                        id={user}
+                        group={group}
+                        canRemove={group.provider === undefined}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -107,9 +112,15 @@ const getPredicate = users => entity =>
 const GROUP_COLUMNS = [
   {
     name: _('groupNameColumn'),
-    itemRenderer: group => (
-      <Text value={group.name} onChange={value => setGroupName(group, value)} />
-    ),
+    itemRenderer: group =>
+      group.provider === undefined ? (
+        <Text
+          value={group.name}
+          onChange={value => setGroupName(group, value)}
+        />
+      ) : (
+        group.name
+      ),
     sortCriteria: group => group.name,
   },
   {
@@ -118,13 +129,14 @@ const GROUP_COLUMNS = [
   },
   {
     name: _('addUserToGroupColumn'),
-    itemRenderer: group => (
-      <SelectSubject
-        predicate={getPredicate(group.users)}
-        onChange={user => user && addUserToGroup(user, group)}
-        value={null}
-      />
-    ),
+    itemRenderer: group =>
+      group.provider === undefined ? (
+        <SelectSubject
+          predicate={getPredicate(group.users)}
+          onChange={user => user && addUserToGroup(user, group)}
+          value={null}
+        />
+      ) : null,
   },
 ]
 
@@ -141,6 +153,7 @@ const ACTIONS = [
 
 @addSubscriptions({
   groups: subscribeGroups,
+  plugins: subscribePlugins,
 })
 @injectIntl
 export default class Groups extends Component {
@@ -153,11 +166,29 @@ export default class Groups extends Component {
     }
   }
 
+  _isLdapLoaded = createSelector(
+    () => this.props.plugins,
+    plugins =>
+      some(plugins, plugin => plugin.name === 'auth-ldap' && plugin.loaded)
+  )
+
   render() {
     const { groups, intl } = this.props
 
     return (
       <div>
+        {this._isLdapLoaded() && (
+          <div>
+            <ActionButton
+              icon='refresh'
+              btnStyle='primary'
+              className='mr-1 mb-1'
+              handler={synchronizeLdapGroups}
+            >
+              {_('syncLdapGroups')}
+            </ActionButton>
+          </div>
+        )}
         <form id='newGroupForm' className='form-inline'>
           <div className='form-group'>
             <input

@@ -259,10 +259,16 @@ class AuthLdap {
 
   load() {
     this._xo.registerAuthenticationProvider(this._authenticate)
+    this._removeApiMethods = this._xo.addApiMethods({
+      ldap: {
+        synchronizeGroups: this._synchronizeGroups.bind(this),
+      },
+    })
   }
 
   unload() {
     this._xo.unregisterAuthenticationProvider(this._authenticate)
+    this._removeApiMethods()
   }
 
   test({ username, password }) {

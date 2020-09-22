@@ -653,6 +653,7 @@ const messages = {
   aclCreate: 'Create',
   newGroupName: 'New group name',
   createGroup: 'Create group',
+  syncLdapGroups: 'Synchronize LDAP groups',
   createGroupButton: 'Create',
   deleteGroup: 'Delete group',
   deleteGroupConfirm: 'Are you sure you want to delete this group?',
