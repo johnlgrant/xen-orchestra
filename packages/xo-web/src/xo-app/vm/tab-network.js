@@ -279,6 +279,8 @@ class VifAllowedIps extends BaseComponent {
 }))
 class VifStatus extends BaseComponent {
   static propTypes = {
+    network: PropTypes.object,
+    vif: PropTypes.object.isRequired,
     vm: PropTypes.object.isRequired,
   }
 
@@ -372,7 +374,6 @@ class VifStatus extends BaseComponent {
   render() {
     const { vif } = this.props
     const { isLockingModeEdition } = this.state
-    const canEditVifLockingMode = this._getCanEditVifLockingMode()
 
     return (
       <div>
@@ -387,21 +388,21 @@ class VifStatus extends BaseComponent {
           state={vif.attached}
         />{' '}
         {this._getNetworkStatus()}{' '}
-        {canEditVifLockingMode && isLockingModeEdition ? (
-          <select
-            className='form-control'
-            onBlur={this.toggleState('isLockingModeEdition')}
-            onChange={this._onChangeVif}
-            value={vif.lockingMode}
-          >
-            {map(this.state.lockingModeValues, lockingMode => (
-              <option key={lockingMode} value={lockingMode}>
-                {lockingMode}
-              </option>
-            ))}
-          </select>
-        ) : (
-          canEditVifLockingMode && (
+        {this._getCanEditVifLockingMode() &&
+          (isLockingModeEdition ? (
+            <select
+              className='form-control'
+              onBlur={this.toggleState('isLockingModeEdition')}
+              onChange={this._onChangeVif}
+              value={vif.lockingMode}
+            >
+              {map(this.state.lockingModeValues, lockingMode => (
+                <option key={lockingMode} value={lockingMode}>
+                  {lockingMode}
+                </option>
+              ))}
+            </select>
+          ) : (
             <ActionButton
               btnStyle='primary'
               icon='edit'
@@ -409,8 +410,7 @@ class VifStatus extends BaseComponent {
               size='small'
               tooltip={_('editVifLockingMode')}
             />
-          )
-        )}
+          ))}
       </div>
     )
   }
