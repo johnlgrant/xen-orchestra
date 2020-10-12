@@ -16,6 +16,7 @@ import Tooltip from 'tooltip'
 import { confirm, form } from 'modal'
 import { Container, Row, Col } from 'grid'
 import { error } from 'notification'
+import { get } from '@xen-orchestra/defined'
 import { injectIntl } from 'react-intl'
 import { isIp, isIpV4 } from 'ip-utils'
 import { Number, Text, XoSelect } from 'editable'
@@ -52,7 +53,7 @@ import {
   createGetObject,
   createGetObjectsOfType,
   createSelector,
-  getResolvedResourceSets,
+  getResolvedResourceSet,
   isAdmin,
 } from 'selectors'
 
@@ -73,25 +74,20 @@ import {
 } from 'xo'
 
 @addSubscriptions(props => ({
+  // used by getResolvedResourceSet
   resourceSet: cb =>
     subscribeResourceSets(resourceSets =>
       cb(find(resourceSets, { id: props.resourceSet }))
     ),
 }))
 @connectStore(() => {
-  const getResolvedResourceSet = (state, props) => {
-    const { isAdmin, resourceSet } = props
-    const self = !isAdmin && resourceSet !== undefined
-    return getResolvedResourceSets(
-      state,
-      { ...props, resourceSets: self ? [resourceSet] : undefined },
-      self // to get objects as a self user
-    )[0]
-  }
-
   return (state, props) => ({
     isAdmin: isAdmin(state, props),
-    resolvedResourceSet: getResolvedResourceSet(state, props),
+    resolvedResourceSet: getResolvedResourceSet(
+      state,
+      props,
+      !props.isAdmin && props.resourceSet !== undefined
+    ),
   })
 })
 class VifNetwork extends BaseComponent {
