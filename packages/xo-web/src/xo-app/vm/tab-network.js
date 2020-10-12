@@ -74,7 +74,6 @@ import {
 } from 'xo'
 
 @addSubscriptions(props => ({
-  // used by getResolvedResourceSet
   resourceSet: cb =>
     subscribeResourceSets(resourceSets =>
       cb(find(resourceSets, { id: props.resourceSet }))
