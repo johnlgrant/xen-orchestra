@@ -85,6 +85,15 @@ export async function set({
     push.apply(newIpAddresses, allowedIpv6Addresses || vif.allowedIpv6Addresses)
   }
 
+  lockingMode =
+    lockingMode !== undefined &&
+    (await this.hasPermissions(this.user.id, [
+      [vif.$VM, 'operate'],
+      [network?.id ?? vif.$network, 'operate'],
+    ]))
+      ? lockingMode
+      : vif.lockingMode
+
   if (network || mac) {
     const xapi = this.getXapi(vif)
 

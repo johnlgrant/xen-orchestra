@@ -275,7 +275,6 @@ class VifAllowedIps extends BaseComponent {
 
 @connectStore(() => ({
   checkPermissions: getCheckPermissions,
-  isAdmin,
 }))
 class VifStatus extends BaseComponent {
   static propTypes = {
@@ -291,11 +290,12 @@ class VifStatus extends BaseComponent {
   }
 
   _getCanEditVifLockingMode = createSelector(
-    () => this.props.isAdmin,
     () => this.props.checkPermissions,
     () => this.props.vm.id,
-    (isAdmin, checkPermissions, vmId) =>
-      isAdmin || checkPermissions(vmId, 'admin')
+    () => this.props.vif.$network,
+    (checkPermissions, vmId, networkId) =>
+      checkPermissions(vmId, 'operate') &&
+      checkPermissions(networkId, 'operate')
   )
 
   _getIps = createSelector(
