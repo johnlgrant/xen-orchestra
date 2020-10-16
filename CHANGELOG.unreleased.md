@@ -8,11 +8,12 @@
 > Users must be able to say: “Nice enhancement, I'm eager to test it”
 
 - [Host/Advanced] Add the field `IOMMU` if it is defined (PR [#5294](https://github.com/vatesfr/xen-orchestra/pull/5294))
-- [VM/Network] Only admins and users with ACLs on VM and VIF network can change a VIF's locking mode (PR [#5283](https://github.com/vatesfr/xen-orchestra/pull/5283))
 
 ### Bug fixes
 
 > Users must be able to say: “I had this issue, happy to know it's fixed”
+
+- [VM/Network] Hide the possibility to change a VIF's locking mode for self users (PR [#5283](https://github.com/vatesfr/xen-orchestra/pull/5283))
 
 ### Packages to release
 

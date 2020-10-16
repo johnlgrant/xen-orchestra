@@ -59,7 +59,11 @@ export default {
       ],
     },
     lockingMode: {
-      set: (value, vif) => vif.set_locking_mode(value),
+      set: (value, vif) => {
+        if (value !== undefined) {
+          return vif.set_locking_mode(value)
+        }
+      },
     },
 
     // in kB/s
