@@ -103,19 +103,15 @@ class VifNetwork extends BaseComponent {
 
   render() {
     const { isAdmin, network, resolvedResourceSet } = this.props
-
+    const self = !isAdmin && resolvedResourceSet !== undefined
     return (
       network !== undefined && (
         <XoSelect
           onChange={this._onChangeNetwork}
           predicate={this._getNetworkPredicate()}
-          resourceSet={isAdmin ? undefined : resolvedResourceSet}
+          resourceSet={self ? resolvedResourceSet : undefined}
           value={network}
-          xoType={
-            isAdmin || resolvedResourceSet === undefined
-              ? 'network'
-              : 'resourceSetNetwork'
-          }
+          xoType={self ? 'resourceSetNetwork' : 'network'}
         >
           {network.name_label}
         </XoSelect>
