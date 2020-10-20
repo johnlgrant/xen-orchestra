@@ -79,21 +79,15 @@ import {
       cb(find(resourceSets, { id: props.resourceSet }))
     ),
 }))
-@connectStore(() => {
-  return (state, props) => ({
-    isAdmin: isAdmin(state, props),
-    resolvedResourceSet: getResolvedResourceSet(
-      state,
-      props,
-      !props.isAdmin && props.resourceSet !== undefined
-    ),
-  })
-})
+@connectStore((state, props) => ({
+  isAdmin: isAdmin(state, props),
+  resolvedResourceSet: getResolvedResourceSet(
+    state,
+    props,
+    props.resourceSet !== undefined // to get objects as a self user
+  ),
+}))
 class VifNetwork extends BaseComponent {
-  static propTypes = {
-    resourceSet: PropTypes.string,
-  }
-
   _getNetworkPredicate = createSelector(
     () => this.props.vif.$pool,
     vifPoolId => network => network.$pool === vifPoolId
@@ -108,17 +102,19 @@ class VifNetwork extends BaseComponent {
   }
 
   render() {
-    const { network, resolvedResourceSet } = this.props
+    const { isAdmin, network, resolvedResourceSet } = this.props
 
     return (
       network !== undefined && (
         <XoSelect
           onChange={this._onChangeNetwork}
           predicate={this._getNetworkPredicate()}
-          resourceSet={resolvedResourceSet}
+          resourceSet={isAdmin ? undefined : resolvedResourceSet}
           value={network}
           xoType={
-            resolvedResourceSet === undefined ? 'network' : 'resourceSetNetwork'
+            isAdmin || resolvedResourceSet === undefined
+              ? 'network'
+              : 'resourceSetNetwork'
           }
         >
           {network.name_label}
