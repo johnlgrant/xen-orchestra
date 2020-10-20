@@ -1,4 +1,4 @@
-# Xen Orchestra [![Build Status](https://travis-ci.org/vatesfr/xen-orchestra.png?branch=master)](https://travis-ci.org/vatesfr/xen-orchestra)
+# Xen Orchestra [![Build Status](https://travis-ci.org/github/johnlgrant/xen-orchestra.png?branch=master)](https://travis-ci.org/github/johnlgrant/xen-orchestra)
 
 ![](http://i.imgur.com/tRffA5y.png)
 
