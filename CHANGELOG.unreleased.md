@@ -35,5 +35,5 @@
 - vhd-lib minor
 - @xen-orchestra/audit-core minor
 - xo-server-audit minor
-- xo-web patch
 - xo-server patch
+- xo-web minor
