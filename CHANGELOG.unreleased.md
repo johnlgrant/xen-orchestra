@@ -13,7 +13,7 @@
 
 > Users must be able to say: “I had this issue, happy to know it's fixed”
 
-- [VM/Network] Don't allow users without permissions to change the VIF's locking mode (PR [#5283](https://github.com/vatesfr/xen-orchestra/pull/5283))
+- [VM/Network] Don't allow users to change a VIF's locking mode if they don't have permissions on the network (PR [#5283](https://github.com/vatesfr/xen-orchestra/pull/5283))
 
 ### Packages to release
 
